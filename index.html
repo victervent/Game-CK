@@ -1,0 +1,445 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>Bull Run Tycoon</title>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+:root{--bg:#e9edf8;--cd:rgba(255,255,255,.78);--tx:#121833;--mu:#566091;--ac:#d9a21b;--up:#0e9f6e;--v:#5b3df5;--rd:#e0264b;--ln:rgba(18,24,51,.12);--o1:rgba(91,61,245,.2);--o2:rgba(217,162,27,.22);padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#080c1c;--cd:rgba(22,30,60,.62);--tx:#e9edff;--mu:#8f99c0;--ac:#f5c451;--up:#35d9a1;--v:#8b6dff;--rd:#ff5472;--ln:rgba(255,255,255,.1);--o1:rgba(139,109,255,.3);--o2:rgba(245,196,81,.16)}}
+:root[data-theme=dark]{--bg:#080c1c;--cd:rgba(22,30,60,.62);--tx:#e9edff;--mu:#8f99c0;--ac:#f5c451;--up:#35d9a1;--v:#8b6dff;--rd:#ff5472;--ln:rgba(255,255,255,.1);--o1:rgba(139,109,255,.3);--o2:rgba(245,196,81,.16)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.45 'Be Vietnam Pro',system-ui,sans-serif}
+.bg{position:fixed;inset:0;z-index:-1;background:radial-gradient(620px 420px at 12% 8%,var(--o1),transparent),radial-gradient(520px 420px at 88% 25%,var(--o2),transparent);animation:dr 14s ease-in-out infinite alternate}
+@keyframes dr{to{transform:scale(1.18) translate(2%,3%)}}
+#app{max-width:1180px;margin:auto;padding:14px;display:grid;gap:12px}
+.cd{background:var(--cd);border:1px solid var(--ln);border-radius:18px;padding:14px;backdrop-filter:blur(14px);box-shadow:0 14px 40px -22px #000}
+h3{margin:0 0 10px;font-size:14px}h3 small{color:var(--mu);font-weight:400;margin-left:6px}
+.hd{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.br{font-weight:800;font-size:20px;letter-spacing:.5px}.br b{color:var(--ac)}
+.ttl{font-weight:800;padding:7px 18px;border-radius:99px;color:#241a00;background:linear-gradient(100deg,var(--ac) 30%,#fff8 50%,var(--ac) 70%);background-size:220% 100%;animation:sh 3s linear infinite,gl 2s ease-in-out infinite alternate}
+@keyframes gl{from{box-shadow:0 0 10px -2px var(--ac)}to{box-shadow:0 0 30px 0 var(--ac)}}
+.ct{display:flex;gap:6px;align-items:center}.ct span{font-weight:600;margin-right:6px}
+button{font:inherit;color:inherit;cursor:pointer;border:1px solid var(--ln);background:var(--cd);border-radius:12px;padding:8px 12px;transition:.2s}
+button:hover:not(:disabled){transform:translateY(-2px);border-color:var(--ac);box-shadow:0 8px 22px -10px var(--ac)}
+button:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+button:disabled{opacity:.4;cursor:not-allowed}
+.ct button.on,.tb.on{background:var(--v);color:#fff;border-color:transparent}
+.st{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+.st small{color:var(--mu);display:block}.st b{font-size:22px;font-weight:800;display:block;font-variant-numeric:tabular-nums}.st em{font-style:normal;color:var(--mu);font-size:12px}
+#pc.up b{color:var(--up)}#pc.dn b{color:var(--rd)}
+main{display:grid;grid-template-columns:1.4fr 1fr;gap:12px;align-items:start}
+@media(max-width:860px){main{grid-template-columns:1fr}}
+.L{display:grid;gap:12px;min-width:0}
+canvas{width:100%;height:240px;display:block}
+.rw{display:flex;gap:8px;align-items:center;padding:5px 8px;border-radius:9px}.rw i{width:9px;height:9px;border-radius:50%}.rw span{flex:1}.rw u{text-decoration:none;color:var(--mu);width:14px}
+.rw.me{background:linear-gradient(90deg,var(--o2),transparent);font-weight:600}
+.mt label{display:flex;justify-content:space-between;font-weight:600}
+.bar{height:10px;border-radius:9px;background:var(--ln);overflow:hidden;margin:5px 0 13px}
+.bar i{display:block;height:100%;width:0;border-radius:9px;transition:width .6s;background:linear-gradient(90deg,var(--up),var(--v),var(--up));background-size:200% 100%;animation:sh 2.5s linear infinite}
+.bar.r i{background:linear-gradient(90deg,var(--ac),var(--rd),var(--ac));background-size:200% 100%}
+.bar.g i{background:linear-gradient(90deg,var(--ac),var(--v),var(--ac));background-size:200% 100%}
+.bar.hot{animation:pl .6s infinite alternate}
+@keyframes sh{to{background-position:-220% 0}}@keyframes pl{to{box-shadow:0 0 16px var(--rd)}}
+.tabs{display:flex;gap:6px;margin-bottom:10px}.tb{flex:1;padding:8px 4px}
+.pn{display:none}.pn.on{display:block}
+.act{display:flex;gap:10px;align-items:center;width:100%;text-align:left;margin-bottom:8px}
+.act i{font-style:normal;font-size:22px}.act span{flex:1}.act small{display:block;color:var(--mu)}.act em{font-style:normal;color:var(--ac)}
+.act.bad:hover:not(:disabled){border-color:var(--rd);box-shadow:0 8px 22px -10px var(--rd)}
+#lg p{margin:0;padding:6px 0;border-bottom:1px solid var(--ln);font-size:13px}#lg p:first-child{animation:in .4s}
+#ac{display:flex;flex-wrap:wrap;gap:8px}
+.bd{display:flex;gap:6px;align-items:center;padding:6px 12px;border-radius:99px;border:1px dashed var(--ln);opacity:.45;filter:grayscale(1)}
+.bd.on{opacity:1;filter:none;border:1px solid var(--ac);box-shadow:0 0 16px -4px var(--ac)}
+#ts{position:fixed;right:12px;top:calc(12px + env(safe-area-inset-top,0px));display:grid;gap:8px;z-index:60;max-width:min(340px,calc(100vw - 24px))}
+.t{padding:10px 14px;border-radius:12px;background:var(--bg);border:1px solid var(--ln);box-shadow:0 10px 30px -10px #000;animation:in .4s}
+.t.bad{border-color:var(--rd)}.t.big{border-color:var(--ac);box-shadow:0 0 34px -6px var(--ac);font-size:16px}
+@keyframes in{from{opacity:0;transform:translateX(30px)}}
+.bs{position:fixed;font-size:26px;pointer-events:none;z-index:50;animation:fly 1.5s ease-out var(--d) forwards}
+@keyframes fly{0%{transform:scale(.5);opacity:1}100%{transform:translate(var(--x),var(--y)) scale(1.3) rotate(360deg);opacity:0}}
+#ov{position:fixed;inset:0;display:none;place-items:center;background:rgba(5,8,20,.72);backdrop-filter:blur(8px);z-index:40;padding:16px}#ov.on{display:grid}
+.bx{max-width:420px;width:100%;text-align:center;background:var(--bg);border:1px solid var(--ac);border-radius:22px;padding:26px;box-shadow:0 0 60px -12px var(--ac)}
+.bx h1,.bx h2{margin:0 0 8px}.bx h1 b{color:var(--ac)}.bx p{color:var(--mu)}
+.bx input{width:100%;font:inherit;color:inherit;background:var(--cd);border:1px solid var(--ln);border-radius:12px;padding:10px;text-align:center;margin:6px 0 12px}
+.go{width:100%;background:linear-gradient(100deg,var(--ac),var(--v));color:#fff;font-weight:800;border:0}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.mc{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.mc div{text-align:center;padding:8px;border-radius:12px;background:var(--ln)}.mc small{display:block;color:var(--mu)}.mc b{font-size:18px}
+#ph{font-size:12px;font-weight:600;color:#fff;text-shadow:0 1px 2px #0006;padding:2px 10px;border-radius:99px;margin-left:8px}.tb{font-size:12.5px;padding:8px 2px}.bx .act{margin:10px 0 0}
+#pb{display:none;position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:30;padding:10px 20px;border-radius:99px;background:var(--bg);border:1px solid var(--ac);font-weight:600;text-align:center;animation:gl 1.5s ease-in-out infinite alternate}.ps #pb{display:block}.ps .hd{border-color:var(--ac)}.ps #dy::after{content:' ⏸'}
+.tabs{flex-wrap:wrap}.tb{flex:1 1 30%}.ar{display:flex;justify-content:space-between;gap:10px;padding:4px 0;border-bottom:1px dashed var(--ln)}.ar b{text-align:right}#p4 h4{margin:14px 0 4px;font-size:13px;color:var(--ac)}.sk{display:flex;height:12px;border-radius:9px;overflow:hidden;margin:6px 0}.sk i{display:block}
+.bx select{width:100%;font:inherit;color:inherit;background:var(--cd);border:1px solid var(--ln);border-radius:12px;padding:10px;margin-bottom:12px}option{background:var(--bg)}
+</style></head><body>
+<div class="bg"></div>
+<div id="app">
+<header class="cd hd"><div class="br">📈 BULL<b>RUN</b> Tycoon</div><div id="ttl" class="ttl"></div><div class="ct"><span id="dy"></span><button id="pz" data-p="1" title="Tạm dừng (Space)">⏸</button><button data-s="1" class="on">1×</button><button data-s="2">2×</button><button data-s="4">4×</button></div></header>
+<section class="st">
+<div class="cd"><small>Tiền mặt</small><b id="s0"></b><em id="s0b"></em></div>
+<div class="cd"><small id="vl">Định giá</small><b id="s1"></b><em id="s1b"></em></div>
+<div class="cd" id="pc"><small>Giá cổ phiếu</small><b id="s2"></b><em id="s2b"></em></div>
+<div class="cd"><small>Nợ vay</small><b id="s4"></b><em id="s4b"></em></div>
+<div class="cd"><small>Sở hữu của bạn</small><b id="s3"></b><em id="s3b"></em></div>
+</section>
+<main><div class="L">
+<div class="cd"><h3>Cuộc đua vốn hóa<small>thang log, 120 ngày gần nhất</small></h3><canvas id="cv"></canvas><div id="lb"></div></div>
+<div class="cd"><h3>Vĩ mô<span id="ph"></span></h3><div class="mc"><div><small>Lãi suất</small><b id="x0"></b></div><div><small>Lạm phát</small><b id="x1"></b></div><div><small>Tăng trưởng GDP</small><b id="x2"></b></div></div><small id="xh" style="color:var(--mu);display:block;margin-top:8px"></small></div>
+<div class="cd mt"><label>🤝 Niềm tin nhà đầu tư <b id="m0"></b></label><div class="bar"><i id="b0"></i></div>
+<label>🕵️ Thanh tra để mắt tới <b id="m1"></b></label><div class="bar r" id="br1"><i id="b1"></i></div>
+<label>🏅 Tiến tới danh hiệu kế tiếp <b id="m2"></b></label><div class="bar g"><i id="b2"></i></div></div>
+<div class="cd"><h3>Bản tin thị trường</h3><div id="lg"></div></div>
+</div>
+<div class="cd"><div class="tabs"><button class="tb on" data-t="0">🏗️ Phát triển</button><button class="tb" data-t="1">🏦 Sàn</button><button class="tb" data-t="2">🦈 Thao túng</button><button class="tb" data-t="3">💳 Vốn</button><button class="tb" data-t="4">📊 Phân tích</button></div>
+<div class="pn on" id="p0"></div><div class="pn" id="p1"></div><div class="pn" id="p2"></div><div class="pn" id="p3"></div><div class="pn" id="p4"></div></div></main>
+<div class="cd"><h3>Thành tích</h3><div id="ac"></div></div>
+</div>
+<div id="pb">⏸ Đang tạm dừng · bấm ▶ hoặc phím Space để chạy tiếp</div><div id="ts"></div><div id="ov"></div>
+<script>
+const $=s=>document.querySelector(s),$$=s=>document.querySelectorAll(s),R=Math.random,cl=(x,a,b)=>Math.max(a,Math.min(b,x));
+const fm=v=>v>=1e6?(v/1e6).toFixed(2)+' nghìn tỷ':v>=1e3?(v/1e3).toFixed(1)+' tỷ':Math.round(v)+' tr';
+const TT=[[0,'Tiểu thương','🧺'],[3e3,'Chủ startup','🚀'],[2e4,'Doanh nhân','💼'],[1.5e5,'Đại gia sàn','📈'],[8e5,'Tỷ phú','💎'],[3e6,'Cá mập phố Wall','🦈'],[1e7,'Hoàng đế tài chính','👑']];
+const UP=[['Sản phẩm','🧪',300,12],['Marketing','📣',400,16],['Nhân sự','👥',600,24],['Chi nhánh','🏢',1500,70],['Pháp chế','⚖️',800,0]];
+const RV=[['VinaTech','VNT','#ff9f43',4000,.0015,0],['Sao Mai Group','SMG','#54a0ff',15000,.0012,1],['Rồng Việt','RVG','#ff6b9d',60000,.001,3],['Hoàng Long','HLR','#feca57',9000,.0014,1],['Đại Nam Energy','DNE','#1dd1a1',28000,.001,2],['An Phát Pharma','APP','#a29bfe',3000,.0016,4],['Số Hóa Việt','SHV','#00d2d3',20000,.0013,0],['Tân Á Bank','TAB','#ff7675',45000,.0011,3]];
+const AC=[['Lên sàn','🔔',g=>g.ls],['Cổ tức đầu tiên','💵',g=>g.dv>0],['Soán ngôi số 1','🥇',g=>g.ls&&g.rk==1],['Cá mập: 5 lần thao túng','🦈',g=>g.mn>=5],['Sống sót sau thanh tra','🛡️',g=>g.au>0],['Sạch như nước cất','🧼',g=>g.ls&&g.d>=150&&!g.mn],['Giá gấp 3 lần IPO','📊',g=>g.ls&&g.p>=g.p0*3],['Nghìn tỷ vốn hóa','💰',g=>g.v>=1e6]];
+const AB=[[1,'ipo','🔔','Niêm yết (IPO)','Bán 30% cổ phần khi định giá từ 5 tỷ'],[1,'div','💵','Chia cổ tức','−10% tiền mặt, nhà đầu tư vui'],[1,'bb','🔁','Mua lại cổ phiếu','−15% tiền mặt, giá tăng, nắm thêm quyền'],[1,'iss','📦','Phát hành thêm','Huy động vốn, nhưng loãng cổ phần'],
+[2,'rum','📢','Tung tin đồn tốt','Hype ngắn hạn · rủi ro +12'],[2,'wash','🎯','Đẩy giá bằng giao dịch ảo','Giá +5% ngay · rủi ro +15'],[2,'cook','📑','Làm đẹp báo cáo','Lợi nhuận “ảo” ×1.5 trong 30 ngày · rủi ro +18'],[2,'sm','🕳️','Bôi nhọ đối thủ','Đối thủ mạnh nhất −12% · rủi ro +10'],[2,'br','💰','Lobby thanh tra','Rủi ro −25 · 20% bị bại lộ']];
+const EV=[['📰 Báo chí khen ngợi bạn',g=>g.tr+=10],['⚠️ Tin đồn xấu lan trên diễn đàn',g=>{g.tr-=12;g.hy-=.05}],['🤝 Ký được hợp đồng lớn',g=>g.cash+=prof(g)*20],['💥 Sự cố sản phẩm, tốn tiền khắc phục',g=>g.cash-=Math.min(g.cash*.3,prof(g)*25)],['🌪️ Khủng hoảng kinh tế, thị trường giảm sâu',g=>{g.tn=-.007;g.tc=18}],['🚀 Chính phủ kích cầu, thị trường tăng mạnh',g=>{g.tn=.006;g.tc=18}],['🕵️ Đối thủ tố cáo bạn lên thanh tra!',g=>g.su+=g.su>15?14:4]];
+let G,sp=1,tm,pz=0;
+const IND=[['Công nghệ','💻',1.2,1.5,.6,1.3,'tăng nhanh, nhạy lãi suất'],['Bán lẻ','🛒',1.5,.8,1.3,.9,'nhạy GDP và lạm phát'],['Năng lượng','⛽',.8,.8,.5,1.1,'chịu được lạm phát'],['Tài chính','🏦',.9,.5,.8,1.2,'ít nhạy lãi suất'],['Y tế','💊',.5,.7,.6,.7,'phòng thủ, ít biến động']];
+const RT=[['AAA',0],['AA',.5],['A',1],['BBB',2],['BB',3.5],['B',5],['CCC',8]],rt=g=>{const k=100-g.debt/Math.max(300,g.v)*90-(ebit(g)<0?35:0)-g.su/4-(g.cash<0?25:0);return RT[k>=90?0:k>=80?1:k>=70?2:k>=60?3:k>=50?4:k>=35?5:6]};
+const rev=g=>(10+UP.reduce((s,u,i)=>s+u[3]*(Math.pow(1.38,g.lv[i])-1)/.38,0)+g.ma)*(1+(g.gdp-4)/30*IND[g.ix][2])*(g.pw>0?.75:1)*(g.st>0?.7:1)*(g.bf>0?1.2:1)*(g.cm>0?1.15:1)*(g.rd>0?1.25:1)*(g.bd>0?.85:1)*cl(1+(g.ms-g.msf)*.6,.8,1.3),
+cost=g=>rev(g)*(.46+g.inf/250*IND[g.ix][4])*(g.cc>0?.85:1)*(g.sc>0?1.12:1)+3+2*g.lv.reduce((a,b)=>a+b,0),ebit=g=>rev(g)-cost(g),
+net=g=>{const e=ebit(g);return e-Math.max(0,e)*.2-g.debt*(g.ir+rt(g)[1])/4500},prof=g=>Math.max(0,net(g)),pe=g=>2000/(g.ir*IND[g.ix][3]+5),
+val=g=>g.ls?g.p*g.sh:Math.max(300,net(g)*pe(g)+g.cash-g.debt),uc=i=>Math.round(UP[i][2]*Math.pow(1.6,G.lv[i])*(1+G.inf/60));
+const lg=m=>G.lgs.unshift(`Ngày ${G.d} · ${m}`);
+function toast(m,c){const e=document.createElement('div');e.className='t '+(c||'');e.innerHTML=m;$('#ts').prepend(e);setTimeout(()=>e.remove(),4500)}
+function burst(s){for(let i=0;i<22;i++){const e=document.createElement('span');e.className='bs';e.textContent=s;e.style.cssText=`--x:${(R()-.5)*90}vw;--y:${-30-R()*60}vh;--d:${R()*.4}s;left:50%;top:70%`;document.body.append(e);setTimeout(()=>e.remove(),2000)}}
+function ov(h){$('#ov').innerHTML=h;$('#ov').className='on'}
+function start(){ov('<div class="bx"><h1>📈 BULL<b>RUN</b></h1><p>Từ tiểu thương lên sàn chứng khoán. Vượt đối thủ, giữ chân nhà đầu tư, thao túng nếu dám, và đừng để thanh tra gõ cửa.</p><input id="nm" maxlength="22" value="Công ty của bạn"><select id="ind">'+IND.map((x,i)=>'<option value="'+i+'">'+x[1]+' '+x[0]+' · '+x[6]+'</option>').join('')+'</select><button class="go" id="go">Khởi nghiệp</button></div>')}
+function end(t,m){G.over=1;ov(`<div class="bx"><h2>💀 ${t}</h2><p>${m}</p><p>Sống sót ${G.d} ngày · ${TT[G.ti][2]} ${TT[G.ti][1]} · đỉnh ${fm(G.pk)}</p><button class="go" id="rs">Chơi lại</button></div>`)}
+function init(n,ix){clearTimeout(tm);G={ix:ix|0,v:1e3,cm:0,cc:0,rd:0,bd:0,sc:0,ms:.25,msf:.25,ret:0,fv:1,n:n.replace(/[<>&]/g,'')||'Công ty',d:0,cash:800,lv:[0,0,0,0,0],ls:0,p:0,p0:1,sh:5000,own:1,tr:50,su:0,hy:0,tn:.002,tc:20,mn:0,au:0,dv:0,dcd:0,cook:0,ti:0,lo:0,over:0,pf:0,nt:0,pk:0,rk:4,ac:{},lgs:[],w1:0,lp:0,debt:0,ma:0,mq:0,pw:0,st:0,bf:0,ng:0,sv:0,md:0,ph:0,pd:70,ir:4,inf:2,gdp:3,rv:RV.map(r=>({n:r[0],t:r[1],c:r[2],v:r[3],m:r[4],i:r[5],h:[r[3]]}))};G.v=val(G);G.h=[G.v];$('#ov').className='';setP(0);lg('Khai trương '+IND[G.ix][1]+' '+G.n+'. Chi phí cố định, thuế 20% và lạm phát sẽ ăn dần lợi nhuận.');render();loop()}
+function loop(){clearTimeout(tm);if(!pz&&sp&&G&&!G.over&&!G.md)tm=setTimeout(()=>{tick();loop()},3000/sp)}
+const PH=[['Phục hồi',4,2,3,.002,'Vay rẻ, cầu hồi dần: lúc hợp để mở rộng'],['Tăng trưởng',5.5,3,6.5,.002,'Doanh thu tăng, đối thủ cũng mạnh lên'],['Bong bóng',8,6,7,.004,'Giá nóng, lãi suất và lạm phát cao: coi chừng vỡ bong bóng'],['Suy thoái',6,4,-1.5,-.005,'Cầu giảm: giữ tiền mặt, tránh vay nợ']];
+function phase(){const g=G;g.ph=(g.ph+1)%4;g.pd=50+R()*40|0;const p=PH[g.ph];lg('🌐 Vĩ mô chuyển sang pha '+p[0]);toast('🌐 Kinh tế bước vào pha <b>'+p[0]+'</b>',g.ph==3?'bad':'');if(g.ph==3){g.rv.forEach(r=>r.v*=.85);if(g.ls)g.p*=.88;toast('💥 Bong bóng vỡ, thị trường lao dốc','bad')}if(g.ph==0)g.sv=1}
+function board(){const g=G,L=[{n:g.n,c:'var(--ac)',v:g.v,y:1},...g.rv.map(r=>({n:IND[r.i][1]+' '+r.n,c:r.c,v:r.v}))].sort((a,b)=>b.v-a.v);g.rk=L.findIndex(x=>x.y)+1;return L}
+function audit(){const g=G,k=Math.max(0,g.cash),f=Math.min(k*.9,k*(.15+g.su/250)*(g.cook>0?2:1));g.cash-=f;if(g.ls)g.p*=.82;g.tr-=22;g.su*=.45;g.au++;lg('🚨 Thanh tra kiểm toán, bị phạt '+fm(f)+(g.cook>0?' (phát hiện báo cáo gian lận, phạt gấp đôi)':''));toast('🚨 <b>Thanh tra đã vào cuộc!</b> Phạt '+fm(f),'bad')}
+const DL=[['🤝 Đối tác đề nghị hợp đồng độc quyền','Nhận: doanh thu +20% trong 30 ngày, nhưng bị chê độc quyền','Từ chối: giữ danh tiếng công bằng',g=>{g.bf=30;g.tr-=5},g=>g.tr+=5],
+['👷 Công đoàn đòi tăng lương 15%','Đồng ý: −10% tiền mặt, nhân viên hăng hái','Từ chối: 40% xảy ra đình công',g=>{g.cash*=.9;g.tr+=6},g=>{if(R()<.4){g.st=15;lg('🪧 Đình công! Doanh thu giảm 30% trong 15 ngày')}}],
+['💼 Quỹ đầu tư muốn rót vốn','Nhận: tiền mặt +8% giá trị, bán 10% cổ phần','Từ chối: giữ nguyên cổ phần',g=>{g.cash+=g.v*.08;g.own*=.9;g.tr+=6},g=>0],
+['📑 Phát hiện sai sót trong báo cáo cũ','Công bố: niềm tin −8, rủi ro −10','Giấu đi: rủi ro +12, tính là thao túng',g=>{g.tr-=8;g.su=Math.max(0,g.su-10)},g=>{g.su=Math.min(100,g.su+12);g.mn++}],
+['🎲 Cơ hội đầu tư mạo hiểm','Đổ 15% tiền mặt: 50% thu về gấp 3','Bỏ qua',g=>{const c=g.cash*.15;g.cash-=c;if(R()<.5){g.cash+=c*3;lg('🎲 Canh bạc thắng lớn!')}else lg('🎲 Canh bạc thua trắng')},g=>0]];
+function dilemma(){const d=DL[R()*DL.length|0];G.md=d;ov(`<div class="bx"><h2>${d[0]}</h2><button class="act" data-c="0"><span><b>A.</b> ${d[1]}</span></button><button class="act" data-c="1"><span><b>B.</b> ${d[2]}</span></button></div>`)}
+function tick(){const g=G,p=PH[g.ph];g.d++;
+g.ir=Math.max(.5,g.ir+(p[1]-g.ir)*.04+(R()-.5)*.05);g.inf=Math.max(0,g.inf+(p[2]-g.inf)*.04+(R()-.5)*.05);g.gdp+=(p[3]-g.gdp)*.05+(R()-.5)*.1;
+if(--g.pd<=0)phase();
+['pw','st','bf','cm','cc','rd','bd','sc'].forEach(k=>{if(g[k]>0)g[k]--});
+const real=net(g)*(.9+.2*R());g.cash+=real;g.nt=real;g.ng=g.cash<0?g.ng+1:0;
+if(--g.tc<=0){g.tc=20+R()*25|0;g.tn=p[4]+(R()-.5)*.003}
+let ra=0;g.rv.forEach(r=>{const o=r.v;r.v=Math.max(800,r.v*(1+r.m+(R()-.5)*.03+g.tn+(r.i==G.ix?-G.ret*.3:0)));ra+=r.v/o-1;r.h.push(r.v)});ra/=g.rv.length;
+const o=g.v;
+if(g.ls){const f=Math.max(0,(Math.max(0,real)*(g.cook?1.5:1)*pe(g)+g.cash*.6-g.debt)/g.sh*(.7+g.tr/100*.6)*Math.max(.5,1+g.hy));g.fv=f;g.p=Math.max(.01,g.p+(f-g.p)*.07+g.p*((R()-.5)*.035*IND[g.ix][5]+g.tn));
+if(g.p>f*1.35&&R()<.05){g.p*=.86;g.tr-=8;lg('🐻 Quỹ bán khống tấn công cổ phiếu bị định giá quá cao');toast('🐻 Quỹ bán khống tấn công!','bad')}}
+g.hy*=.93;g.v=val(g);g.ret=g.v/o-1;{const si=g.rv.filter(r=>r.i==g.ix);g.msf=1/(si.length+1);g.ms=g.v/(g.v+si.reduce((s,r)=>s+r.v,0))}g.h.push(g.v);g.pk=Math.max(g.pk,g.v);
+if(g.ls)g.tr=cl(g.tr+(g.v/o-1-ra)*60+(50-g.tr)*.012,0,100);
+if(g.cook>0&&--g.cook==0){g.tr-=10;lg('📑 Số liệu thật bị lộ, nhà đầu tư thất vọng')}
+if(g.dcd>0)g.dcd--;
+if(g.d%30==0&&g.ls){const pn=prof(g),gr=pn/(g.lp||pn)-1;g.lp=pn;g.tr+=gr>0?4:-4;lg('📊 Báo cáo quý: lợi nhuận '+(gr>0?'tăng '+(gr*100).toFixed(0)+'%':'không tăng trưởng'))}
+if(g.d%14==0&&R()<.7){const e=EV[R()*EV.length|0];lg(e[0]);e[1](g)}
+if(g.d%20==0&&R()<.8){const r=g.rv[R()*g.rv.length|0],k=R()<.5;r.v*=k?1.1:.88;lg((k?'📈 ':'📉 ')+r.n+(k?' ra mắt sản phẩm mới, cổ phiếu bay cao':' dính bê bối, cổ phiếu lao dốc'))}
+if(g.mn>=3&&R()<.015){g.su+=12;lg('📢 Nhân viên tố giác sai phạm lên cơ quan chức năng');toast('📢 Có người tố giác bạn!','bad')}
+g.su=Math.min(100,Math.max(0,g.su-.15));
+if(g.su>30&&R()<(g.su-30)/450*(1-.05*g.lv[4]))audit();
+if(g.su>=65&&!g.w1){g.w1=1;toast('⚠️ Thanh tra đang theo dõi bạn sát sao','bad')}if(g.su<45)g.w1=0;
+g.tr=cl(g.tr,0,100);
+let ti=0;TT.forEach((t,i)=>{if(g.v>=t[0])ti=i});if(ti>g.ti){g.ti=ti;toast(`${TT[ti][2]} Danh hiệu mới: <b>${TT[ti][1]}</b>`,'big');burst(TT[ti][2])}
+board();AC.forEach((a,i)=>{if(!g.ac[i]&&a[2](g)){g.ac[i]=1;toast('🏆 Thành tích: '+a[0],'big');burst(a[1])}});
+if(g.su>=100)return end('Bị khởi tố','Thanh tra đủ bằng chứng thao túng thị trường. Bạn bị khởi tố và tài sản bị phong tỏa.');
+g.lo=g.tr<8?g.lo+1:0;
+if(g.lo>=15)return end('Bị thâu tóm thù địch','Nhà đầu tư bán tháo, đối thủ gom đủ cổ phần và thay luôn ban lãnh đạo.');
+if(g.own<.35)return end('Mất quyền kiểm soát','Bạn phát hành quá nhiều cổ phiếu, cổ đông khác đã nắm quyền chi phối.');
+if(g.ng>=12)return end('Phá sản','Tiền mặt âm quá lâu, ngân hàng thu hồi nợ và tòa án tuyên bố phá sản.');
+$('#pc').className=g.v>=o?'cd up':'cd dn';render();if(g.d%30==0)dilemma()}
+function render(){const g=G,t=TT[g.ti],n=TT[g.ti+1],p=PH[g.ph];g.tr=cl(g.tr,0,100);g.v=val(g);const L=board();
+$('#dy').textContent='Ngày '+g.d;$('#ttl').textContent=t[2]+' '+t[1];
+$('#ph').textContent=p[0];$('#ph').style.background='var('+['--up','--ac','--v','--rd'][g.ph]+')';$('#x0').textContent=g.ir.toFixed(1)+'%';$('#x1').textContent=g.inf.toFixed(1)+'%';$('#x2').textContent=g.gdp.toFixed(1)+'%';$('#x2').style.color=g.gdp<0?'var(--rd)':'';$('#xh').textContent=p[5]+' · còn khoảng '+g.pd+' ngày';
+const nt=g.nt||net(g);$('#s0').textContent=fm(g.cash);$('#s0b').textContent=g.cash<0?'⚠ Âm tiền, phá sản sau '+(12-g.ng)+' ngày':(nt>=0?'+':'')+fm(nt)+'/ngày sau thuế và lãi';
+$('#s4').textContent=fm(g.debt);$('#s4b').textContent='Tín nhiệm '+rt(g)[0]+' · lãi '+fm(g.debt*(g.ir+rt(g)[1])/4500)+'/ngày · '+Math.round(g.debt/Math.max(1,g.v)*100)+'% giá trị';
+$('#vl').textContent=g.ls?'Vốn hóa':'Định giá';$('#s1').textContent=fm(g.v);$('#s1b').textContent='Hạng '+g.rk+'/'+(g.rv.length+1)+' · thị phần ngành '+(g.ms*100).toFixed(0)+'%';
+$('#s2').textContent=g.ls?g.p.toFixed(2)+' k₫':'Chưa niêm yết';$('#s2b').textContent=g.ls?((g.p/g.p0-1)*100).toFixed(1)+'% so với giá IPO':'Cần định giá từ 5 tỷ để lên sàn';
+$('#s3').textContent=(g.own*100).toFixed(1)+'%';$('#s3b').textContent=g.own<.51?'⚠ Dưới 51%, nguy cơ mất quyền':'Giữ quyền kiểm soát';
+$('#m0').textContent=g.ls?Math.round(g.tr)+'/100':'Chưa niêm yết';$('#b0').style.width=(g.ls?g.tr:0)+'%';
+$('#m1').textContent=Math.round(g.su)+'/100';$('#b1').style.width=g.su+'%';$('#br1').classList.toggle('hot',g.su>60);
+const lo=t[0]||500,pc=n?cl(Math.log(g.v/lo)/Math.log(n[0]/lo),0,1):1;$('#m2').textContent=n?n[2]+' '+n[1]+' ('+fm(n[0])+')':'Đỉnh cao!';$('#b2').style.width=pc*100+'%';
+$('#lb').innerHTML=L.map((x,i)=>`<div class="rw${x.y?' me':''}"><u>${i+1}</u><i style="background:${x.c}"></i><span>${x.n}</span><b>${fm(x.v)}</b></div>`).join('');
+$('#lg').innerHTML=g.lgs.slice(0,7).map(s=>`<p>${s}</p>`).join('');
+$('#ac').innerHTML=AC.map((a,i)=>`<div class="bd${g.ac[i]?' on':''}">${a[1]} ${a[0]}</div>`).join('');
+UP.forEach((u,i)=>{$('#l'+i).textContent='Lv '+g.lv[i];$('#g'+i).textContent=i==4?'−7% rủi ro thao túng, ít bị kiểm toán hơn':'+'+fm(u[3]*Math.pow(1.38,g.lv[i])*.45)+'/ngày · rủi ro hỏng '+Math.round(bfp(i)*100)+'%';$('#c'+i).textContent=g.lv[i]>=18?'Tối đa':fm(uc(i));$$('[data-u]')[i].disabled=g.cash<uc(i)||g.lv[i]>=18});
+const mr=Math.min(...g.rv.map(r=>r.v)),d={ipo:g.ls||g.v<5000,div:!g.ls||g.dcd>0||g.cash<100,bb:!g.ls||g.cash<200,iss:!g.ls,ma:!g.ls||mr>g.v*.4||g.cash<mr*.4,rum:!g.ls||g.cash<100,wash:!g.ls||g.cash<100,cook:!g.ls||g.cook>0,sm:!g.ls,br:g.cash<200,loan:g.debt+Math.max(300,g.v*.25)>g.v*.7,rep:g.debt<=0||g.cash<=0};
+d.ad=g.cm>0||g.cash<rev(g)*8;d.rd=g.rd>0||g.cash<rev(g)*15;d.cut=g.cc>0;d.exp=g.cash<rev(g)*30;d.sell=!g.ls||g.own<=.45;d.part=g.own<=.5;$$('[data-a]').forEach(b=>b.disabled=!!d[b.dataset.a]);an();draw()}
+function draw(){const c=$('#cv'),x=c.getContext('2d'),dp=devicePixelRatio||1,W=c.clientWidth,H=c.clientHeight,cs=getComputedStyle(document.documentElement);c.width=W*dp;c.height=H*dp;x.scale(dp,dp);
+const S=[...G.rv.map(r=>[r.h.slice(-120),r.c,1.4]),[G.h.slice(-120),cs.getPropertyValue('--ac').trim(),3]];
+const L=S.flatMap(s=>s[0].map(v=>Math.log(v))),lo=Math.min(...L),hi=Math.max(...L),n=S[0][0].length;
+const X=i=>10+(W-20)*i/Math.max(n-1,1),Y=v=>H-12-(H-24)*(Math.log(v)-lo)/((hi-lo)||1);
+x.strokeStyle=cs.getPropertyValue('--ln').trim();x.lineWidth=1;
+for(let i=0;i<5;i++){const y=12+(H-24)*i/4;x.beginPath();x.moveTo(0,y);x.lineTo(W,y);x.stroke()}
+S.forEach((s,k)=>{x.beginPath();s[0].forEach((v,i)=>i?x.lineTo(X(i),Y(v)):x.moveTo(X(i),Y(v)));x.strokeStyle=s[1];x.lineWidth=s[2];x.lineJoin='round';
+if(k==G.rv.length){x.shadowColor=s[1];x.shadowBlur=14}x.stroke();x.shadowBlur=0;
+if(k==G.rv.length){x.lineTo(X(n-1),H);x.lineTo(X(0),H);x.globalAlpha=.14;x.fillStyle=s[1];x.fill();x.globalAlpha=1;x.beginPath();x.arc(X(n-1),Y(s[0][n-1]),4.5,0,7);x.fillStyle=s[1];x.fill()}})}
+AC.push(['Thâu tóm đối thủ','🤝',g=>g.mq>0],['Sống sót qua suy thoái','🌐',g=>g.sv>0]);
+AB.push([1,'ma','🤝','Thâu tóm đối thủ nhỏ','Chi 40% giá trị đối thủ yếu nhất để +doanh thu vĩnh viễn (bạn cần lớn gấp 2.5 lần)'],[3,'loan','💳','Vay ngân hàng','+25% định giá làm vốn, trả lãi theo lãi suất hiện hành'],[3,'rep','🏧','Trả nợ','Dùng tiền mặt trả nợ để giảm gánh lãi']);
+EV.push(['💸 Đối thủ phát động chiến tranh giá',g=>g.pw=25],['📉 Chi phí nguyên liệu tăng vọt',g=>g.cash-=prof(g)*10],['🧲 Đối thủ săn đầu người, mất nhân tài',g=>g.tr-=6]);
+const shady=(c,s,f,m)=>{if(G.cash<c)return;G.cash-=c;G.su=Math.min(100,G.su+s*(1-.07*G.lv[4]));G.mn++;f();lg(m)};
+const A={
+ipo(){if(G.ls||G.v<5000)return;const r=G.v*.3*.92;G.cash+=r;G.ls=1;G.own*=.7;G.p=G.p0=G.v/G.sh;G.tr=60;lg('🔔 IPO thành công, huy động '+fm(r));toast('🔔 <b>Chính thức lên sàn!</b>','big');burst('🔔')},
+div(){const c=G.cash*.1;G.cash-=c;G.tr+=10;G.p*=1.02;G.dv++;G.dcd=20;lg('💵 Chia cổ tức '+fm(c))},
+bb(){const c=G.cash*.15,k=c/G.p;G.cash-=c;G.own*=G.sh/(G.sh-k);G.sh-=k;G.p*=1.03;G.tr+=3;lg('🔁 Mua lại cổ phiếu '+fm(c))},
+iss(){const k=G.sh*.1,r=k*G.p*.96;G.cash+=r;G.own*=G.sh/(G.sh+k);G.sh+=k;G.p*=.97;G.tr-=4;lg('📦 Phát hành thêm, huy động '+fm(r))},
+ma(){const r=G.rv.reduce((a,b)=>a.v<b.v?a:b),c=r.v*.4;if(G.cash<c)return;G.cash-=c;G.ma+=r.v/80;G.own*=.94;G.mq++;G.tr+=6;lg('🤝 Thâu tóm '+r.n+' với giá '+fm(c)+' cộng cổ phiếu');r.v=2500+R()*2500;r.n='Startup mới'},
+loan(){const c=Math.max(300,G.v*.25);G.cash+=c;G.debt+=c;lg('💳 Vay ngân hàng '+fm(c)+' với lãi '+G.ir.toFixed(1)+'%')},
+rep(){const c=Math.min(G.cash,G.debt);if(c<=0)return;G.cash-=c;G.debt-=c;lg('🏧 Trả nợ '+fm(c))},
+rum(){shady(Math.max(100,G.cash*.03),12,()=>{G.hy+=.12;G.tr+=8},'📢 Tung tin đồn tốt về công ty')},
+wash(){shady(G.cash*.06,15,()=>{G.p*=1.05;G.hy+=.05},'🎯 Đẩy giá bằng giao dịch ảo')},
+cook(){shady(0,18,()=>{G.cook=30;G.tr+=12},'📑 Làm đẹp báo cáo tài chính')},
+sm(){shady(G.cash*.04,10,()=>{const r=G.rv.reduce((a,b)=>a.v>b.v?a:b);r.v*=.88;G.tr+=5},'🕳️ Tung tin xấu về đối thủ mạnh nhất')},
+br(){const c=Math.max(200,G.cash*.05);if(G.cash<c)return;G.cash-=c;if(R()<.2){G.su=Math.min(100,G.su+15);lg('💰 Hối lộ bị bại lộ, rủi ro tăng vọt')}else{G.su=Math.max(0,G.su-25);lg('💰 Lobby thành công, hồ sơ êm xuôi')}}};
+function setP(v){pz=v;document.body.classList.toggle('ps',!!v);$('#pz').textContent=v?'▶':'⏸';$('#pz').classList.toggle('on',!!v);loop()}
+document.onkeydown=e=>{if(e.code=='Space'&&G&&!G.over&&!G.md&&e.target.tagName!='INPUT'&&e.target.tagName!='SELECT'){e.preventDefault();setP(!pz)}};
+AC.push(['R&D đột phá','🔬',g=>g.rd>0]);
+AB.push([0,'ad','📺','Chiến dịch quảng cáo','Tốn 8 ngày doanh thu: doanh thu +15% trong 20 ngày'],[0,'rd','🔬','R&D đột phá','Tốn 15 ngày doanh thu: 40% ra sản phẩm hot (+25% doanh thu 40 ngày)'],[0,'cut','✂️','Cắt giảm chi phí','Chi phí biến đổi −15% trong 30 ngày, niềm tin −4']);
+EV.push(['🛢️ Giá dầu thế giới biến động mạnh, lạm phát nhích lên',g=>g.inf+=1],['🏛️ Chính phủ ban hành thuế mới',g=>g.cash-=prof(g)*8],['🌏 Căng thẳng thương mại toàn cầu',g=>{g.tn=-.004;g.tc=15}],['🏆 Công ty được vinh danh doanh nghiệp xuất sắc',g=>g.tr+=8]);
+DL.push(['🏦 Ngân hàng đề nghị tái cơ cấu nợ','Chấp nhận: nợ −15%, niềm tin −3','Từ chối',g=>{g.debt*=.85;g.tr-=3},g=>0],['📱 Sản phẩm bỗng viral trên mạng xã hội','Chạy theo: tốn 10 ngày doanh thu, doanh thu +25% trong 20 ngày','Giữ vững chiến lược',g=>{g.cash-=rev(g)*10;g.rd=20},g=>g.tr+=2]);
+Object.assign(A,{ad(){const c=rev(G)*8;G.cash-=c;G.cm=20;G.tr+=3;lg('📺 Chiến dịch quảng cáo tốn '+fm(c))},rd(){const c=rev(G)*15;G.cash-=c;if(R()<.4){G.rd=40;G.tr+=8;lg('🔬 R&D thành công, sản phẩm mới bán chạy!');burst('🔬')}else lg('🔬 R&D thất bại, mất '+fm(c))},cut(){G.cc=30;G.tr-=4;lg('✂️ Cắt giảm chi phí, tiết kiệm 15% trong 30 ngày')}});
+const sma=(a,n)=>{const s=a.slice(-n);return s.reduce((x,y)=>x+y,0)/Math.max(1,s.length)},pc=x=>(x>=0?'+':'')+x.toFixed(1)+'%',rw=(a,b,c)=>`<div class="ar"><span>${a}</span><b${c?` style="color:var(--${c})"`:''}>${b}</b></div>`;
+function an(){const g=G,h=g.h,v=g.v,e=ebit(g),a=h.slice(-21),nt=net(g),I=IND[g.ix],r0=rt(g);let u=0,w=0;h.slice(-15).forEach((x,i,q)=>{if(i){const c=x-q[i-1];c>0?u+=c:w-=c}});
+const rs=w?100-100/(1+u/w):50,m10=sma(h,10),m30=sma(h,30),mo=h.length>10?v/h[h.length-11]-1:0,vo=Math.sqrt(a.reduce((s,x,i)=>i?s+Math.pow(Math.log(x/a[i-1]),2):s,0)/Math.max(1,a.length-1))*100,l30=h.slice(-30),tot=v+g.rv.reduce((s,r)=>s+r.v,0),pm=g.ls&&g.fv>0?(g.p/g.fv-1)*100:0,
+fg=cl(50+mo*300+(rs-50)*.6+(g.tr-50)*.4+(g.tn>0?8:-8),0,100),sg=m10>m30&&rs<70?['Mua','up']:m10<m30&&rs>30?['Bán','rd']:['Giữ','ac'],fl=fg<25?'Sợ hãi cực độ':fg<45?'Sợ hãi':fg<55?'Trung lập':fg<75?'Tham lam':'Tham lam cực độ',fr=1-g.own,io=fr*(.25+g.tr/250),fo=fr*.2;
+const ad=[[g.ls&&pm>25,'Giá đắt hơn giá trị hợp lý: dễ bị bán khống, cân nhắc mua lại cổ phiếu hoặc phát hành thêm khi giá cao.'],[g.ls&&pm<-20,'Giá rẻ hơn giá trị hợp lý: lúc tốt để mua lại cổ phiếu.'],[g.ph==3,'Suy thoái: giữ tiền mặt, tránh vay nợ mới.'],[g.ph==2,'Bong bóng: định giá nóng, hãy giảm nợ trước khi vỡ.'],[g.ph==0&&g.debt<g.v*.3,'Vay rẻ: có thể mở rộng bằng vốn vay.'],[g.debt>g.v*.5,'Nợ quá cao: nên trả nợ để giữ xếp hạng tín nhiệm.'],[g.su>50,'Thanh tra đang soi: ngừng thao túng, nâng cấp Pháp chế hoặc lobby.'],[g.inf>5,'Lạm phát cao đẩy chi phí lên: cân nhắc cắt giảm chi phí.'],[e<0,'Công ty đang lỗ: nâng cấp hoặc cắt giảm chi phí ngay.'],[g.ls&&g.tr<35,'Niềm tin thấp: chia cổ tức hoặc mua lại cổ phiếu để lấy lại lòng tin.'],[g.cash>rev(g)*40,'Tiền mặt nhàn rỗi nhiều: tái đầu tư hoặc chia cổ tức.']].filter(x=>x[0]).slice(0,4).map(x=>x[1]);
+$('#p4').innerHTML='<h4>Kỹ thuật</h4>'+rw('Tín hiệu',sg[0],sg[1])+rw('MA10 / MA30',fm(m10)+' / '+fm(m30))+rw('RSI(14)',rs.toFixed(0)+(rs>70?' · quá mua':rs<30?' · quá bán':''),rs>70?'rd':rs<30?'up':'')+rw('Động lượng 10 ngày',pc(mo*100),mo>=0?'up':'rd')+rw('Biến động 20 ngày',vo.toFixed(1)+'% mỗi ngày')+rw('Hỗ trợ / kháng cự',fm(Math.min(...l30))+' / '+fm(Math.max(...l30)))
++'<h4>Định giá và cơ bản</h4>'+(g.ls?rw('Giá so với giá trị hợp lý',pc(pm),pm>25?'rd':pm<-20?'up':''):'')+rw('P/E (1 năm = 90 ngày)',(v/Math.max(.1,nt*90)).toFixed(1)+'×')+rw('Doanh thu mỗi ngày',fm(rev(g)))+rw('Biên EBIT',(e/rev(g)*100).toFixed(1)+'%',e<0?'rd':'up')+rw('Lợi nhuận ròng mỗi ngày',fm(nt),nt<0?'rd':'')+rw('Nợ / giá trị',Math.round(g.debt/Math.max(1,v)*100)+'%')+rw('Xếp hạng tín nhiệm',r0[0]+' (lãi +'+r0[1]+'%)')+rw('Đủ tiền cầm cự',nt<0?Math.floor(Math.max(0,g.cash)/-nt)+' ngày':'Không lo')
++'<h4>Thị trường</h4>'+rw('Thị phần vốn hóa',(v/tot*100).toFixed(1)+'%')+rw('Thị phần trong ngành',(g.ms*100).toFixed(1)+'% (hợp lý '+(g.msf*100).toFixed(0)+'%)',g.ms>=g.msf?'up':'rd')+rw('Tâm lý thị trường',fl+' ('+fg.toFixed(0)+')')+'<div class="bar"><i style="width:'+fg+'%"></i></div>'+rw('Ngành',I[1]+' '+I[0])+rw('Độ nhạy GDP / lãi suất / lạm phát','×'+I[2]+' / ×'+I[3]+' / ×'+I[4])+rw('Pha vĩ mô',PH[g.ph][0])
++'<h4>Đối thủ (30 ngày)</h4>'+g.rv.map(r=>rw(r.n,fm(r.v)+' ('+pc((r.v/(r.h[r.h.length-31]||r.h[0])-1)*100)+')')).join('')
++(g.ls?'<h4>Cơ cấu cổ đông</h4><div class="sk"><i style="width:'+g.own*100+'%;background:var(--ac)"></i><i style="width:'+io*100+'%;background:var(--v)"></i><i style="width:'+fo*100+'%;background:var(--up)"></i><i style="flex:1;background:var(--mu)"></i></div>'+rw('Bạn / Tổ chức',(g.own*100).toFixed(0)+'% / '+(io*100).toFixed(0)+'%')+rw('Nước ngoài / Nhỏ lẻ',(fo*100).toFixed(0)+'% / '+((fr-io-fo)*100).toFixed(0)+'%'):'')
++'<h4>Khuyến nghị</h4>'+(ad.length?ad.map(t=>'<p style="margin:4px 0">• '+t+'</p>').join(''):'<p>Chưa có cảnh báo đáng chú ý.</p>')}
+const BF=[[.15,'Sản phẩm mới bị lỗi, phải thu hồi: mất toàn bộ chi phí',g=>{g.tr-=5;g.bd=20}],[.22,'Chiến dịch truyền thông gây phản cảm, bị tẩy chay',g=>{g.tr-=8;g.bd=25}],[.15,'Tuyển nhầm lãnh đạo, nội bộ lục đục, nhân viên đình công',g=>{g.st=12}],[.2,'Chi nhánh mới đặt sai vị trí, lỗ nặng',g=>{g.lv[3]++;g.cash-=uc(3)*.3;g.bd=15}],[0]];
+const bfp=i=>BF[i][0]?BF[i][0]+(G.gdp<0?.08:0):0;
+function upg(i,c){G.cash-=c;if(R()<bfp(i)){lg('⚠️ '+BF[i][1]);toast('⚠️ '+BF[i][1],'bad');BF[i][2](G)}else{G.lv[i]++;lg(UP[i][1]+' Nâng cấp '+UP[i][0]+' lên Lv '+G.lv[i])}}
+AC.push(['Độc chiếm ngành','👑',g=>g.d>20&&g.ms>.6],['Kẻ thâu tóm hàng loạt','🦅',g=>g.mq>=3]);
+AB.push([0,'exp','🌏','Mở rộng thị trường mới','Tốn 30 ngày doanh thu: 55% +25% doanh thu vĩnh viễn, 45% thất bại'],[1,'sell','🧳','Bán cổ phần cá nhân','Chủ sở hữu bán 5% lấy tiền, nhà đầu tư sẽ lo ngại'],[1,'part','🤝','Bán cổ phần cho đối tác chiến lược','10% cổ phần giá cao, +doanh thu hiệp lực, 30% đối tác gây rắc rối']);
+EV.push(['🔥 Khủng hoảng tài chính toàn cầu bùng nổ!',g=>{g.ph=3;g.pd=70;g.rv.forEach(r=>r.v*=.82);if(g.ls)g.p*=.85;g.tn=-.008;g.tc=25;toast('🔥 <b>Khủng hoảng toàn cầu!</b>','bad')}],['🏦 Khủng hoảng ngân hàng: lãi suất vọt lên',g=>g.ir+=3],['🚢 Đứt gãy chuỗi cung ứng, chi phí tăng 12% trong 25 ngày',g=>g.sc=25],['🦠 Dịch bệnh bùng phát, nhu cầu sụt mạnh',g=>g.st=20],['💱 Tiền tệ mất giá, lạm phát tăng',g=>g.inf+=2],['⚖️ Chính phủ siết quy định ngành, thanh tra sát hơn',g=>g.su+=8],['🎁 Chính phủ trợ cấp cho ngành của bạn',g=>{g.cash+=prof(g)*15;g.tr+=4}],['🥊 Đối thủ cùng ngành tung khuyến mãi sốc, giành thị phần',g=>{g.pw=20;g.rv.forEach(r=>{if(r.i==g.ix)r.v*=1.06})}],['🕵️ Đối thủ cài nội gián đánh cắp bí mật kinh doanh',g=>{g.rd=0;g.tr-=4;g.bd=12}]);
+DL.push(['🤝 Đối thủ đề nghị sáp nhập','Đồng ý: doanh thu +, mất 15% cổ phần','Từ chối: 30% họ bán phá giá',g=>{g.ma+=rev(g)*.2;g.own*=.85;g.tr+=4},g=>{if(R()<.3)g.pw=20}],['🏬 Khách hàng lớn đòi giảm giá','Giảm giá: doanh thu −15% trong 20 ngày','Từ chối: mất khách, niềm tin −4',g=>{g.bd=20;g.tr+=3},g=>g.tr-=4],['🧓 Cổ đông lớn muốn thoái vốn','Mua lại block: −5% giá trị, +4% sở hữu','Để họ bán ra thị trường: giá −7%',g=>{g.cash-=g.v*.05;g.own+=.04;g.tr+=2},g=>{g.p*=.93;g.tr-=4}],['🧾 Cơ quan thuế thanh tra đột xuất','Hợp tác: tốn 10 ngày lợi nhuận, rủi ro −8','Chống đối: rủi ro +10',g=>{g.cash-=prof(g)*10;g.su=Math.max(0,g.su-8)},g=>g.su=Math.min(100,g.su+10)],['💻 Hacker tấn công dữ liệu khách hàng','Trả tiền chuộc: tốn 6 ngày doanh thu','Không trả: 50% lộ dữ liệu, niềm tin −12',g=>g.cash-=rev(g)*6,g=>{if(R()<.5){g.tr-=12;g.su=Math.min(100,g.su+8)}}],['🚀 Cơ hội mua lại một startup nhỏ','Mua: tốn 12 ngày doanh thu, +doanh thu vĩnh viễn','Bỏ qua',g=>{g.cash-=rev(g)*12;g.ma+=rev(g)*.08},g=>0]);
+Object.assign(A,{exp(){const c=rev(G)*30;G.cash-=c;if(R()<.55){G.ma+=rev(G)*.25;G.tr+=6;lg('🌏 Mở rộng thị trường mới thành công!');burst('🌏')}else{G.cash+=c*.4;G.tr-=6;G.bd=20;lg('🌏 Mở rộng thất bại, mất '+fm(c*.6))}},
+sell(){const t=.05*G.v*.97;G.own-=.05;G.cash+=t;G.tr-=5;G.p*=.98;lg('🧳 Chủ sở hữu bán 5% cổ phần cá nhân, thu '+fm(t))},
+part(){const t=.1*G.v*1.15;G.cash+=t;G.own*=.9;G.ma+=rev(G)*.06;lg('🤝 Bán 10% cổ phần cho đối tác chiến lược, thu '+fm(t));if(R()<.3){G.tr-=6;lg('🤝 Đối tác đòi can thiệp điều hành, nhà đầu tư lo lắng')}},
+ad(){const c=rev(G)*8;G.cash-=c;if(R()<.25){G.tr-=5;G.bd=15;lg('📺 Quảng cáo phản tác dụng, khách hàng phản ứng tiêu cực')}else{G.cm=20;G.tr+=3;lg('📺 Chiến dịch quảng cáo tốn '+fm(c))}}});
+$('#p0').innerHTML=UP.map((u,i)=>`<button class="act" data-u="${i}"><i>${u[1]}</i><span><b>${u[0]} <em id="l${i}"></em></b><small id="g${i}"></small></span><b id="c${i}"></b></button>`).join('');
+[0,1,2,3].forEach(k=>$('#p'+k).innerHTML=(k?'':$('#p0').innerHTML)+AB.filter(a=>a[0]==k).map(a=>`<button class="act${k==2?' bad':''}" data-a="${a[1]}"><i>${a[2]}</i><span><b>${a[3]}</b><small>${a[4]}</small></span></button>`).join(''));
+document.onclick=e=>{const b=e.target.closest('button');if(!b)return;const d=b.dataset;
+if(b.id=='go')return init($('#nm').value,+$('#ind').value);if(b.id=='rs')return start();
+if(d.c!=null){const x=G.md;G.md=0;$('#ov').className='';x[3+ +d.c](G);render();return loop()}
+if(d.p!=null)return setP(!pz);if(d.s!=null){sp=+d.s;$$('[data-s]').forEach(x=>x.classList.toggle('on',x==b));return loop()}
+if(d.t!=null){$$('.tb').forEach(x=>x.classList.toggle('on',x==b));$$('.pn').forEach((p,i)=>p.classList.toggle('on',i==d.t));return}
+if(!G||G.over)return;
+if(d.a)A[d.a]();else if(d.u!=null){const i=+d.u,c=uc(i);if(G.cash<c||G.lv[i]>=18)return;upg(i,c)}
+render()};
+/* ===== BULL RUN PATCH: dán nguyên khối này NGAY TRÊN dòng start(); ở cuối <script> ===== */
+(()=>{
+const SV='brt_save',HS='brt_hs',DF=['😊 Dễ','⚖️ Thường','🔥 Địa ngục'],
+SC=['♾️ Tự do','🏁 Nghìn tỷ trong 500 ngày','🌐 Sống sót khủng hoảng (150 ngày)'],
+XN=[['Giám đốc điều hành (CEO)','🧑‍💼','Tăng doanh thu, lương 5% doanh thu',.05],['Giám đốc tài chính (CFO)','💹','Giảm lãi vay, tăng niềm tin, lương 3%',.03],['Giám đốc pháp chế','⚖️','Giảm rủi ro thanh tra, lương 2.5%',.025]],
+TK=[['Tự động hóa','⚙️','+3% doanh thu/ngày',20],['AI phân tích','🤖','Tổng +7% doanh thu/ngày',35],['Độc quyền công nghệ','🛰️','Tổng +12%, đối thủ cùng ngành chậm lại',50]],
+HP='<p style="text-align:left;font-size:13px">• <b>Định giá</b>: giá trị công ty, đạt 5 tỷ là có thể IPO.<br>• <b>Lãi suất, lạm phát, GDP</b> đổi chi phí và doanh thu, mỗi ngành nhạy một kiểu.<br>• <b>Niềm tin</b> dưới 8 quá 15 ngày là bị thâu tóm.<br>• <b>Thanh tra</b>: thao túng làm rủi ro tăng, chạm 100 là bị khởi tố.<br>• <b>Sở hữu</b> dưới 35% là mất công ty. Âm tiền 12 ngày là phá sản.<br>• Tab <b>Mở rộng</b>: thuê lãnh đạo, mua hoặc bán khống đối thủ, nghiên cứu công nghệ.<br>• Game tự lưu mỗi ngày. Phím Space để tạm dừng.</p>';
+const ld=()=>{try{return JSON.parse(localStorage.getItem(SV))}catch(e){return null}},
+sv=()=>{try{if(G&&!G.over&&!G.md)localStorage.setItem(SV,JSON.stringify(G,(k,v)=>k=='h'&&Array.isArray(v)?v.slice(-300):v))}catch(e){}};
+document.head.insertAdjacentHTML('beforeend','<style>#p5 h4{margin:14px 0 6px;font-size:13px;color:var(--ac)}#p5 .ar button{padding:4px 10px;font-size:12px}#p4 canvas{height:210px}#ov select{margin-top:0}</style>');
+$('.ct').insertAdjacentHTML('beforeend','<button id="hp" title="Hướng dẫn">❓</button>');
+$('.tabs').insertAdjacentHTML('beforeend','<button class="tb" data-t="5">🎯 Mở rộng</button>');
+$('#p4').insertAdjacentHTML('afterend','<div class="pn" id="p5"></div>');
+
+/* Ban lãnh đạo, đầu tư đối thủ, công nghệ */
+XN.forEach((x,k)=>A['h'+k]=()=>{const e=G.ex=G.ex||{};if(e[k]){delete e[k];lg('🧾 Sa thải '+x[0]);return}const c=rev(G)*20;if(G.cash<c)return;G.cash-=c;e[k]=1+(R()*3|0);lg(x[1]+' Thuê '+x[0]+' ('+e[k]+'⭐)')});
+TK.forEach((t,k)=>A['t'+k]=()=>{const c=rev(G)*t[3];if((G.tk|0)!=k||G.cash<c)return;G.cash-=c;G.tk=k+1;if(k==2)G.rv.forEach(r=>{if(r.i==G.ix)r.m*=.6});lg(t[1]+' Hoàn tất công nghệ '+t[0]);burst('🔬')});
+for(let i=0;i<8;i++){const o=s=>()=>{const P=G.pos=G.pos||{},a=Math.max(100,G.cash*.1);if(P[i]||G.cash<a)return;G.cash-=a;P[i]={s,a,e:G.rv[i].v};lg((s>0?'📈 Mua cổ phiếu ':'🐻 Bán khống ')+G.rv[i].n+' '+fm(a))};
+A['b'+i]=o(1);A['s'+i]=o(-1);A['c'+i]=()=>{const p=G.pos&&G.pos[i];if(!p)return;const n=p.s*p.a*(G.rv[i].v/p.e-1);G.cash+=Math.max(0,p.a+n);delete G.pos[i];lg('💱 Chốt lệnh '+G.rv[i].n+': '+(n>=0?'lãi ':'lỗ ')+fm(Math.abs(n)))}}
+function zx(){const g=G;if(!g||!$('#p5'))return;const r=rev(g),P=g.pos||{},E=g.ex||{},t=g.tk|0,df=g.df==null?1:g.df;
+let h=rw('🎯 '+SC[g.scn|0],DF[df]);
+if(g.scn==1)h+=rw('Tiến độ',fm(g.v)+' / 1.00 nghìn tỷ · ngày '+g.d+'/500');
+if(g.scn==2)h+=rw('Tiến độ','ngày '+g.d+'/150');
+h+='<h4>👔 Ban lãnh đạo <small>kỹ năng 1 đến 3⭐ ngẫu nhiên khi thuê</small></h4>';
+XN.forEach((x,k)=>{const e=E[k];h+=`<button class="act" data-a="h${k}"${!e&&g.cash<r*20?' disabled':''}><i>${x[1]}</i><span><b>${x[0]} ${e?'⭐'.repeat(e):''}</b><small>${e?'Bấm để sa thải':x[2]}</small></span><b>${e?'−'+fm(r*x[3])+'/ngày':fm(r*20)}</b></button>`});
+h+='<h4>🎯 Đầu tư vào đối thủ <small>mỗi lệnh 10% tiền mặt</small></h4>';
+const a=Math.max(100,g.cash*.1);
+g.rv.forEach((v,i)=>{const p=P[i],n=p?p.s*p.a*(v.v/p.e-1):0;h+=p?`<button class="act" data-a="c${i}"><i>💱</i><span><b>${v.n} · ${p.s>0?'Mua':'Bán khống'}</b><small>Giá trị ${fm(v.v)} · bấm để chốt</small></span><b style="color:var(--${n>=0?'up':'rd'})">${n>=0?'+':''}${fm(n)}</b></button>`:`<div class="ar"><span>${IND[v.i][1]} ${v.n} <small>${fm(v.v)}</small></span><span><button data-a="b${i}"${g.cash<a?' disabled':''}>Mua</button> <button data-a="s${i}"${g.cash<a?' disabled':''}>Bán khống</button></span></div>`});
+h+='<h4>🔬 Cây công nghệ</h4>';
+TK.forEach((x,k)=>{const c=r*x[3];h+=`<button class="act" data-a="t${k}"${t!=k||g.cash<c?' disabled':''}><i>${x[1]}</i><span><b>${x[0]}${t>k?' ✅':''}</b><small>${x[2]}</small></span><b>${t>k?'Đã xong':fm(c)}</b></button>`});
+$('#p5').innerHTML=h}
+
+/* Biểu đồ nến + khối lượng */
+function cnd(){const c=$('#cn');if(!c||!G||!c.clientWidth)return;const x=c.getContext('2d'),dp=devicePixelRatio||1,W=c.clientWidth,H=c.clientHeight,cs=getComputedStyle(document.documentElement),h=G.h,N=5,cd=[];
+for(let i=Math.max(0,h.length-N*36);i<h.length;i+=N){const s=h.slice(i,i+N);if(s.length)cd.push([h[Math.max(0,i-1)],Math.max(...s),Math.min(...s),s[s.length-1],s.reduce((q,v,j)=>j?q+Math.abs(v/s[j-1]-1):q,0)])}
+if(!cd.length)return;c.width=W*dp;c.height=H*dp;x.scale(dp,dp);
+const lo=Math.min(...cd.map(k=>k[2])),hi=Math.max(...cd.map(k=>k[1])),mv=Math.max(.0001,...cd.map(k=>k[4])),ph=H*.74,w=W/cd.length,Y=v=>ph-(v-lo)/((hi-lo)||1)*(ph-8)+4;
+cd.forEach((k,i)=>{const u=k[3]>=k[0],col=cs.getPropertyValue(u?'--up':'--rd').trim(),cx=i*w+w/2;x.strokeStyle=x.fillStyle=col;x.lineWidth=1;x.beginPath();x.moveTo(cx,Y(k[1]));x.lineTo(cx,Y(k[2]));x.stroke();
+const y1=Y(Math.max(k[0],k[3])),y2=Y(Math.min(k[0],k[3]));x.fillRect(cx-w*.3,y1,w*.6,Math.max(1.5,y2-y1));x.globalAlpha=.45;const vh=k[4]/mv*(H*.22);x.fillRect(cx-w*.3,H-vh,w*.6,vh);x.globalAlpha=1})}
+const _a=an;an=function(){_a();$('#p4').insertAdjacentHTML('afterbegin','<h4>Biểu đồ nến · 5 ngày/nến + khối lượng</h4><canvas id="cn"></canvas>');cnd()};
+const _r=render;render=function(){_r();zx()};
+
+/* Lưu game, độ khó, kịch bản, điểm */
+function zcont(){const s=ld();if(!s)return;clearTimeout(tm);G=s;$('#ov').className='';setP(0);render()}
+function zfin(w){const g=G;try{localStorage.removeItem(SV)}catch(e){}let H={};try{H=JSON.parse(localStorage.getItem(HS))||{}}catch(e){}
+const k=g.scn|0,s=Math.round(g.pk/50+g.d*8+Object.keys(g.ac).length*250+(w?4000:0)),b=H[k]||0;H[k]=Math.max(b,s);try{localStorage.setItem(HS,JSON.stringify(H))}catch(e){}
+$('#rs').insertAdjacentHTML('beforebegin','<p>🏅 Điểm <b>'+s.toLocaleString('vi-VN')+'</b> · '+(s>b?'🎉 Kỷ lục mới!':'kỷ lục '+b.toLocaleString('vi-VN'))+'<br><small>'+SC[k]+' · '+DF[g.df==null?1:g.df]+'</small></p>')}
+function zwin(t,m){G.over=1;ov(`<div class="bx"><h2>🏆 ${t}</h2><p>${m}</p><p>Ngày ${G.d} · ${fm(G.v)} · ${TT[G.ti][2]} ${TT[G.ti][1]}</p><button class="go" id="rs">Chơi lại</button></div>`);burst('🏆');zfin(1)}
+const _e=end;end=function(t,m){_e(t,m);zfin(0)};
+const _s=start;start=function(){_s();const s=ld(),b=$('#go'),o=a=>a.map((x,i)=>`<option value="${i}"${i==1&&a==DF?' selected':''}>${x}</option>`).join('');
+b.insertAdjacentHTML('beforebegin',`<select id="df">${o(DF)}</select><select id="sc">${o(SC)}</select>`);
+b.insertAdjacentHTML('afterend',(s&&s.d?`<button class="act" id="ct"><i>💾</i><span><b>Tiếp tục ván đã lưu</b><small>${s.n} · ngày ${s.d}</small></span></button>`:'')+`<details style="margin-top:12px;text-align:left"><summary>❓ Hướng dẫn nhanh</summary>${HP}</details>`)};
+const _i=init;init=function(n,ix){const df=+($('#df')?.value??1),sc=+($('#sc')?.value||0);_i(n,ix);G.df=df;G.scn=sc;G.pos={};G.ex={};G.tk=0;G.cash*=[1.5,1,.7][df];G.rv.forEach(r=>r.m*=[.85,1,1.3][df]);
+if(sc==2){G.ph=3;G.pd=140;G.ir=6;G.gdp=-1;G.tn=-.006;G.tc=30;G.cash*=.8;G.rv.forEach(r=>r.v*=.7)}
+lg('🎯 Chế độ '+SC[sc]+' · độ khó '+DF[df]);render()};
+const _t=tick;tick=function(){_t();const g=G;if(g.over)return;const r=rev(g),df=g.df==null?1:g.df,E=g.ex||{},tk=g.tk|0;
+g.cash+=r*[.05,0,-.07][df]+(tk?r*[.03,.07,.12][tk-1]:0);
+if(E[0])g.cash+=r*(.03*(E[0]+1)-.05);
+if(E[1]){g.cash+=r*(.015*(E[1]+1)-.03)+g.debt*(g.ir+rt(g)[1])/4500*.15*E[1];g.tr=cl(g.tr+.02*E[1],0,100)}
+if(E[2]){g.cash-=r*.025;g.su=Math.max(0,g.su-.12*E[2])}
+for(const k in E)if(R()<.012){if(R()<.5)lg('🧲 '+XN[k][0]+' bị đối thủ săn đi');else{lg('📰 Bê bối: '+XN[k][0]+' dính scandal');g.tr-=8;g.su=Math.min(100,g.su+6)}delete E[k]}
+if(g.scn==1){if(g.v>=1e6)return zwin('Nghìn tỷ!','Bạn chạm mốc 1 nghìn tỷ đúng hạn.');if(g.d>=500)return end('Hết giờ','Qua ngày 500 mà vẫn chưa chạm nghìn tỷ.')}
+if(g.scn==2&&g.d>=150)return zwin('Sống sót qua khủng hoảng','Công ty vẫn đứng vững sau 150 ngày bão tố.');
+if(!g.md)sv();render()};
+AC.push(['Ban lãnh đạo đủ bộ','👔',g=>g.ex&&Object.keys(g.ex).length>=3],['Cây công nghệ hoàn tất','🛰️',g=>g.tk>=3]);
+DL.push(['🦈 Đối thủ ngỏ ý thâu tóm thù địch','Phòng thủ (poison pill): −10% tiền mặt, niềm tin +5','Mặc kệ: 40% họ gom được 15% cổ phần của bạn',g=>{g.cash*=.9;g.tr+=5},g=>{if(R()<.4){g.own*=.85;lg('🦈 Đối thủ gom 15% cổ phần của bạn')}}],
+['👔 Headhunter chào mời ban lãnh đạo','Tăng lương giữ người: −8 ngày doanh thu, niềm tin +3','Để họ đi: mất 1 lãnh đạo ngẫu nhiên',g=>{g.cash-=rev(g)*8;g.tr+=3},g=>{const k=Object.keys(g.ex||{});if(k.length){delete g.ex[k[R()*k.length|0]];lg('🧲 Mất một lãnh đạo')}}]);
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+if(b.id=='ct')return zcont();
+if(b.id=='hp'&&G&&!G.over&&!G.md){setP(1);ov('<div class="bx"><h2>❓ Hướng dẫn nhanh</h2>'+HP+'<button class="go" id="hx">Đã hiểu</button></div>')}
+if(b.id=='hx'){$('#ov').className='';setP(0)}
+if(b.dataset.t=='4')cnd()});
+addEventListener('pagehide',sv);document.addEventListener('visibilitychange',()=>{if(document.hidden)sv()});
+})();
+/* ===== BULL RUN PATCH 2: dán NGAY SAU bản vá 1, vẫn phía trên dòng start(); ===== */
+(()=>{
+const DP=[['Sản xuất','🏭'],['Kinh doanh','🛍️'],['Kỹ thuật','🛠️'],['Hành chính','🗂️']],W=[10,14,20,12],SH=[.04,.035,.03,.015],CR=[.07,.06,.05,.025],
+RN=['📰 Báo chí','🏛️ Cơ quan quản lý','🏦 Quỹ lớn'],
+kf=g=>1+g.inf/50,
+nd=g=>{const r=rev(g)*30;return SH.map((s,i)=>Math.max(1,Math.ceil(r*s/(W[i]*kf(g)))))},
+pay=g=>g.hc.reduce((a,h,i)=>a+h*W[i]*kf(g),0),
+rl=(i,v)=>{G.rl[i]=cl(G.rl[i]+v,0,100)},
+zi=g=>{if(!g.rl)g.rl=[50,50,50];if(!g.hc)g.hc=nd(g);g.bo|=0},
+sv2=()=>{try{if(G&&!G.over&&!G.md)localStorage.setItem('brt_save',JSON.stringify(G,(q,v)=>q=='h'&&Array.isArray(v)?v.slice(-300):v))}catch(e){}};
+
+/* Giao diện: tab cuộn ngang, cột phải dính khi cuộn, sơ đồ tổ chức */
+document.head.insertAdjacentHTML('beforeend','<style>.tabs{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}.tb{flex:0 0 auto;padding:8px 12px;white-space:nowrap}@media(min-width:861px){main>.cd{position:sticky;top:calc(10px + env(safe-area-inset-top,0px))}.pn.on{max-height:calc(100vh - 110px);overflow:auto;padding-right:4px}}#p6 h4{margin:14px 0 6px;font-size:13px;color:var(--ac)}.og{display:grid;gap:6px}.or{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.or.d4{grid-template-columns:repeat(2,1fr)}.on{background:var(--ln);border-radius:12px;padding:8px;text-align:center;font-size:12px}.on b,.on small,.on em{display:block}.on small{color:var(--mu)}.on em{font-style:normal;color:var(--ac)}.on.top{background:linear-gradient(100deg,var(--o2),var(--o1))}.on.off{opacity:.45;border:1px dashed var(--mu)}.oc{height:12px;width:2px;margin:0 auto;background:var(--mu);opacity:.5}.bt{display:flex;gap:4px;justify-content:center}.bt button{padding:3px 9px;font-size:12px}</style>');
+$('.tabs').insertAdjacentHTML('beforeend','<button class="tb" data-t="6">🏢 Tổ chức</button>');
+$('#p5').insertAdjacentHTML('afterend','<div class="pn" id="p6"></div>');
+$('.st').insertAdjacentHTML('beforeend','<div class="cd"><small>Nhân sự</small><b id="hs"></b><em id="hse"></em></div>');
+$('.mt').insertAdjacentHTML('beforeend','<h3 style="margin:14px 0 8px">🤝 Quan hệ<small>ảnh hưởng ngầm mỗi ngày</small></h3>'+RN.map((n,i)=>`<label>${n} <b id="rl${i}"></b></label><div class="bar g"><i id="rb${i}"></i></div>`).join(''));
+
+/* Hành động: tuyển, sa thải, thưởng, quan hệ */
+DP.forEach((d,i)=>{const w=()=>W[i]*kf(G);
+A['hi'+i]=()=>{const c=w();if(G.cash<c)return;G.cash-=c;G.hc[i]++};
+A['fi'+i]=()=>{if(G.hc[i]<=1)return;G.cash-=w()*.5;G.hc[i]--;G.tr-=.3};
+A['fl'+i]=()=>{const n=Math.min(nd(G)[i]-G.hc[i],Math.floor(Math.max(0,G.cash)/w()));if(n<=0)return;G.cash-=n*w();G.hc[i]+=n;lg(d[1]+' Tuyển thêm '+n+' người cho '+d[0])}});
+const RA=[['pr','📰','Họp báo và PR','Báo chí +12, niềm tin tăng dần',6,0],['rg','🏛️','Làm việc với cơ quan quản lý','Quản lý +12, rủi ro thanh tra giảm dần',8,1],['rf','🏦','Roadshow gặp quỹ lớn','Quỹ lớn +12, đỡ giá cổ phiếu',10,2]];
+RA.forEach(a=>A[a[0]]=()=>{const c=rev(G)*a[4];if(G.cash<c)return;G.cash-=c;rl(a[5],12);lg(a[1]+' '+a[2]+': '+RN[a[5]]+' +12')});
+A.bonus=()=>{const c=pay(G)*.5;if(G.cash<c)return;G.cash-=c;G.bo=30;G.tr=cl(G.tr+2,0,100);lg('🧧 Thưởng nóng, năng suất +10% trong 30 ngày')};
+const hk={rum:[[1,-4],[0,-2]],wash:[[1,-6],[2,-3]],cook:[[1,-6],[2,-5],[0,-3]],sm:[[0,-4],[1,-3]],br:[[1,3]],div:[[2,6]],bb:[[2,3]],iss:[[2,-4]],ipo:[[2,10],[0,4]],sell:[[2,-5]],ad:[[0,3]]};
+Object.keys(hk).forEach(n=>{const f=A[n];A[n]=()=>{const s=()=>G.cash+G.mn*1e7+G.cook*1e5+G.own*1e9+G.sh,b=s();f();if(s()!=b)hk[n].forEach(a=>rl(a[0],a[1]))}});
+
+/* Sơ đồ tổ chức + bảng quan hệ */
+function zo(){const g=G;if(!g||!g.rl)return;
+[0,1,2].forEach(i=>{$('#rl'+i).textContent=Math.round(g.rl[i])+'/100';$('#rb'+i).style.width=g.rl[i]+'%'});
+const nn=nd(g),kk=kf(g),py=pay(g),E=g.ex||{},tot=g.hc.reduce((a,b)=>a+b,0),nx=30-g.d%30,r=rev(g),av=g.hc.reduce((a,h,i)=>a+Math.min(1.1,h/nn[i]),0)/4;
+$('#hs').textContent=tot+' người';$('#hse').textContent='Lương '+fm(py)+'/tháng · kỳ tới '+nx+' ngày';
+if(!$('#p6'))return;
+const bt=(a,t,d)=>`<button data-a="${a}"${d?' disabled':''}>${t}</button>`;
+let h=`<div class="og"><div class="on top"><b>🏢 ${g.n}</b><small>Chủ sở hữu ${(g.own*100).toFixed(0)}%</small></div><div class="oc"></div><div class="or">`
++['Giám đốc điều hành','Giám đốc tài chính','Giám đốc pháp chế'].map((n,i)=>`<div class="on${E[i]?'':' off'}"><b>${['🧑‍💼','💹','⚖️'][i]}</b><small>${n}</small><em>${E[i]?'⭐'.repeat(E[i]):'Trống'}</em></div>`).join('')
++'</div><div class="oc"></div><div class="or d4">'
++DP.map((d,i)=>{const f=g.hc[i]/nn[i],c=f<.7?'rd':f>1.1?'ac':'up',w=W[i]*kk;return `<div class="on"><b>${d[1]} ${d[0]}</b><small>${g.hc[i]} / ${nn[i]} người · ${fm(w)}/người/tháng</small><div class="bar"><i style="width:${Math.min(100,f*100)}%;animation:none;background:var(--${c})"></i></div><div class="bt">${bt('fi'+i,'−1',g.hc[i]<=1)}${bt('hi'+i,'+1',g.cash<w)}${bt('fl'+i,'Đủ',nn[i]<=g.hc[i]||g.cash<w)}</div></div>`}).join('')
++'</div></div>'
++rw('Tổng nhân sự',tot+' người')+rw('Lương tháng',fm(py)+' · trả sau '+nx+' ngày')+rw('Hiệu suất nhân sự',Math.round(av*100)+'%',av<.7?'rd':'up')+rw('Thiếu người (dưới 50%) thì nhân viên nghỉ việc, dư người thì chỉ tốn lương','')
++'<h4>🧧 Chăm sóc và quan hệ</h4>'
++`<button class="act" data-a="bonus"${g.cash<py*.5?' disabled':''}><i>🧧</i><span><b>Thưởng nóng cho nhân viên</b><small>Năng suất +10% trong 30 ngày${g.bo>0?' · còn '+g.bo+' ngày':''}</small></span><b>${fm(py*.5)}</b></button>`
++RA.map(a=>`<button class="act" data-a="${a[0]}"${g.cash<r*a[4]?' disabled':''}><i>${a[1]}</i><span><b>${a[2]}</b><small>${a[3]}</small></span><b>${fm(r*a[4])}</b></button>`).join('');
+$('#p6').innerHTML=h}
+const _r=render;render=function(){if(G)zi(G);_r();zo()};
+const _i=init;init=function(n,ix){_i(n,ix);G.rl=[50,50,50];G.hc=nd(G);G.bo=0;render()};
+
+/* Mỗi ngày: quan hệ trôi về 50, hiệu ứng ngầm, năng suất nhân sự, lương tháng */
+const _t=tick;tick=function(){_t();const g=G;if(!g||g.over)return;zi(g);const r=rev(g),nn=nd(g);
+g.rl=g.rl.map(v=>cl(v+(50-v)*.008,0,100));
+g.tr=cl(g.tr+(g.rl[0]-50)*.004,0,100);g.su=cl(g.su-(g.rl[1]-50)*.004,0,100);
+if(g.ls)g.p*=1+(g.rl[2]-50)*.00004;else g.cash+=r*(g.rl[2]-50)*.0004;
+g.hc.forEach((h,i)=>{const f=h/nn[i];g.cash+=r*CR[i]*Math.min(1.1,f)*(g.bo>0?1.1:1);if(i==3)g.su=Math.max(0,g.su-.06*Math.min(1,f));if(f<.5&&R()<.02){g.hc[i]=Math.max(1,Math.floor(h*.9));g.tr-=3;lg('😤 '+DP[i][0]+' quá tải, nhân viên nghỉ việc')}});
+if(g.bo>0)g.bo--;
+if(g.d%30==0){const p=pay(g);g.cash-=p;lg('💸 Trả lương tháng '+fm(p)+' cho '+g.hc.reduce((a,b)=>a+b,0)+' nhân sự')}
+if(!g.md)sv2();render()};
+
+/* Thành tích, sự kiện, quyết định liên quan tới quan hệ */
+AC.push(['Bộ ba quan hệ','🤝',g=>g.rl&&g.rl.every(v=>v>=70)],['Đội ngũ 100 người','👥',g=>g.hc&&g.hc.reduce((a,b)=>a+b,0)>=100]);
+EV.push(['📰 Tạp chí kinh tế bình chọn công ty tiêu biểu',g=>{rl(0,8);g.tr+=3}],['🕵️ Báo chí đào bới quá khứ công ty',g=>{rl(0,-10);g.tr-=3}],['🏦 Quỹ lớn công bố nâng tỷ trọng cổ phiếu của bạn',g=>{rl(2,8);if(g.ls)g.p*=1.03}],['🏛️ Cơ quan quản lý ra thông tư mới',g=>{rl(1,-6);g.cash-=prof(g)*5}]);
+DL.push(['📰 Phóng viên điều tra xin phỏng vấn','Hợp tác minh bạch: báo chí +10, rủi ro −5','Từ chối: báo chí −8',g=>{rl(0,10);g.su=Math.max(0,g.su-5)},g=>rl(0,-8)],
+['🏦 Quỹ lớn mời bạn dự roadshow','Tham dự: tốn 6 ngày doanh thu, quỹ lớn +12','Bỏ qua: quỹ lớn −3',g=>{g.cash-=rev(g)*6;rl(2,12)},g=>rl(2,-3)],
+['🏛️ Cơ quan quản lý đề nghị kiểm tra tự nguyện','Chấp nhận: tốn 5 ngày lợi nhuận, quản lý +12, rủi ro −6','Từ chối: quản lý −10',g=>{g.cash-=prof(g)*5;rl(1,12);g.su=Math.max(0,g.su-6)},g=>rl(1,-10)]);
+})();
+/* ===== BULL RUN PATCH 2: dán NGAY SAU bản vá 1, vẫn phía trên dòng start(); ===== */
+(()=>{
+const DP=[['Sản xuất','🏭'],['Kinh doanh','🛍️'],['Kỹ thuật','🛠️'],['Hành chính','🗂️']],W=[10,14,20,12],SH=[.04,.035,.03,.015],CR=[.07,.06,.05,.025],
+RN=['📰 Báo chí','🏛️ Cơ quan quản lý','🏦 Quỹ lớn'],
+kf=g=>1+g.inf/50,
+nd=g=>{const r=rev(g)*30;return SH.map((s,i)=>Math.max(1,Math.ceil(r*s/(W[i]*kf(g)))))},
+pay=g=>g.hc.reduce((a,h,i)=>a+h*W[i]*kf(g),0),
+rl=(i,v)=>{G.rl[i]=cl(G.rl[i]+v,0,100)},
+zi=g=>{if(!g.rl)g.rl=[50,50,50];if(!g.hc)g.hc=nd(g);g.bo|=0},
+sv2=()=>{try{if(G&&!G.over&&!G.md)localStorage.setItem('brt_save',JSON.stringify(G,(q,v)=>q=='h'&&Array.isArray(v)?v.slice(-300):v))}catch(e){}};
+
+/* Giao diện: tab cuộn ngang, cột phải dính khi cuộn, sơ đồ tổ chức */
+document.head.insertAdjacentHTML('beforeend','<style>.tabs{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}.tb{flex:0 0 auto;padding:8px 12px;white-space:nowrap}@media(min-width:861px){main>.cd{position:sticky;top:calc(10px + env(safe-area-inset-top,0px))}.pn.on{max-height:calc(100vh - 110px);overflow:auto;padding-right:4px}}#p6 h4{margin:14px 0 6px;font-size:13px;color:var(--ac)}.og{display:grid;gap:6px}.or{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.or.d4{grid-template-columns:repeat(2,1fr)}.ogn{background:var(--ln);border-radius:12px;padding:8px;text-align:center;font-size:12px}.ogn b,.ogn small,.ogn em{display:block}.ogn small{color:var(--mu)}.ogn em{font-style:normal;color:var(--ac)}.ogn.top{background:linear-gradient(100deg,var(--o2),var(--o1))}.ogn.off{opacity:.45;border:1px dashed var(--mu)}.oc{height:12px;width:2px;margin:0 auto;background:var(--mu);opacity:.5}.bt{display:flex;gap:4px;justify-content:center}.bt button{padding:3px 9px;font-size:12px}</style>');
+$('.tabs').insertAdjacentHTML('beforeend','<button class="tb" data-t="6">🏢 Tổ chức</button>');
+$('#p5').insertAdjacentHTML('afterend','<div class="pn" id="p6"></div>');
+$('.st').insertAdjacentHTML('beforeend','<div class="cd"><small>Nhân sự</small><b id="hs"></b><em id="hse"></em></div>');
+$('.mt').insertAdjacentHTML('beforeend','<h3 style="margin:14px 0 8px">🤝 Quan hệ<small>ảnh hưởng ngầm mỗi ngày</small></h3>'+RN.map((n,i)=>`<label>${n} <b id="rl${i}"></b></label><div class="bar g"><i id="rb${i}"></i></div>`).join(''));
+
+/* Hành động: tuyển, sa thải, thưởng, quan hệ */
+DP.forEach((d,i)=>{const w=()=>W[i]*kf(G);
+A['hi'+i]=()=>{const c=w();if(G.cash<c)return;G.cash-=c;G.hc[i]++};
+A['fi'+i]=()=>{if(G.hc[i]<=1)return;G.cash-=w()*.5;G.hc[i]--;G.tr-=.3};
+A['fl'+i]=()=>{const n=Math.min(nd(G)[i]-G.hc[i],Math.floor(Math.max(0,G.cash)/w()));if(n<=0)return;G.cash-=n*w();G.hc[i]+=n;lg(d[1]+' Tuyển thêm '+n+' người cho '+d[0])}});
+const RA=[['pr','📰','Họp báo và PR','Báo chí +12, niềm tin tăng dần',6,0],['rg','🏛️','Làm việc với cơ quan quản lý','Quản lý +12, rủi ro thanh tra giảm dần',8,1],['rf','🏦','Roadshow gặp quỹ lớn','Quỹ lớn +12, đỡ giá cổ phiếu',10,2]];
+RA.forEach(a=>A[a[0]]=()=>{const c=rev(G)*a[4];if(G.cash<c)return;G.cash-=c;rl(a[5],12);lg(a[1]+' '+a[2]+': '+RN[a[5]]+' +12')});
+A.bonus=()=>{const c=pay(G)*.5;if(G.cash<c)return;G.cash-=c;G.bo=30;G.tr=cl(G.tr+2,0,100);lg('🧧 Thưởng nóng, năng suất +10% trong 30 ngày')};
+const hk={rum:[[1,-4],[0,-2]],wash:[[1,-6],[2,-3]],cook:[[1,-6],[2,-5],[0,-3]],sm:[[0,-4],[1,-3]],br:[[1,3]],div:[[2,6]],bb:[[2,3]],iss:[[2,-4]],ipo:[[2,10],[0,4]],sell:[[2,-5]],ad:[[0,3]]};
+Object.keys(hk).forEach(n=>{const f=A[n];A[n]=()=>{const s=()=>G.cash+G.mn*1e7+G.cook*1e5+G.own*1e9+G.sh,b=s();f();if(s()!=b)hk[n].forEach(a=>rl(a[0],a[1]))}});
+
+/* Sơ đồ tổ chức + bảng quan hệ */
+function zo(){const g=G;if(!g||!g.rl)return;
+[0,1,2].forEach(i=>{$('#rl'+i).textContent=Math.round(g.rl[i])+'/100';$('#rb'+i).style.width=g.rl[i]+'%'});
+const nn=nd(g),kk=kf(g),py=pay(g),E=g.ex||{},tot=g.hc.reduce((a,b)=>a+b,0),nx=30-g.d%30,r=rev(g),av=g.hc.reduce((a,h,i)=>a+Math.min(1.1,h/nn[i]),0)/4;
+$('#hs').textContent=tot+' người';$('#hse').textContent='Lương '+fm(py)+'/tháng · kỳ tới '+nx+' ngày';
+if(!$('#p6'))return;
+const bt=(a,t,d)=>`<button data-a="${a}"${d?' disabled':''}>${t}</button>`;
+let h=`<div class="og"><div class="ogn top"><b>🏢 ${g.n}</b><small>Chủ sở hữu ${(g.own*100).toFixed(0)}%</small></div><div class="oc"></div><div class="or">`
++['Giám đốc điều hành','Giám đốc tài chính','Giám đốc pháp chế'].map((n,i)=>`<div class="ogn${E[i]?'':' off'}"><b>${['🧑‍💼','💹','⚖️'][i]}</b><small>${n}</small><em>${E[i]?'⭐'.repeat(E[i]):'Trống'}</em></div>`).join('')
++'</div><div class="oc"></div><div class="or d4">'
++DP.map((d,i)=>{const f=g.hc[i]/nn[i],c=f<.7?'rd':f>1.1?'ac':'up',w=W[i]*kk;return `<div class="ogn"><b>${d[1]} ${d[0]}</b><small>${g.hc[i]} / ${nn[i]} người · ${fm(w)}/người/tháng</small><div class="bar"><i style="width:${Math.min(100,f*100)}%;animation:none;background:var(--${c})"></i></div><div class="bt">${bt('fi'+i,'−1',g.hc[i]<=1)}${bt('hi'+i,'+1',g.cash<w)}${bt('fl'+i,'Đủ',nn[i]<=g.hc[i]||g.cash<w)}</div></div>`}).join('')
++'</div></div>'
++rw('Tổng nhân sự',tot+' người')+rw('Lương tháng',fm(py)+' · trả sau '+nx+' ngày')+rw('Hiệu suất nhân sự',Math.round(av*100)+'%',av<.7?'rd':'up')+rw('Thiếu người (dưới 50%) thì nhân viên nghỉ việc, dư người thì chỉ tốn lương','')
++'<h4>🧧 Chăm sóc và quan hệ</h4>'
++`<button class="act" data-a="bonus"${g.cash<py*.5?' disabled':''}><i>🧧</i><span><b>Thưởng nóng cho nhân viên</b><small>Năng suất +10% trong 30 ngày${g.bo>0?' · còn '+g.bo+' ngày':''}</small></span><b>${fm(py*.5)}</b></button>`
++RA.map(a=>`<button class="act" data-a="${a[0]}"${g.cash<r*a[4]?' disabled':''}><i>${a[1]}</i><span><b>${a[2]}</b><small>${a[3]}</small></span><b>${fm(r*a[4])}</b></button>`).join('');
+$('#p6').innerHTML=h}
+const _r=render;render=function(){if(G)zi(G);_r();zo()};
+const _i=init;init=function(n,ix){_i(n,ix);G.rl=[50,50,50];G.hc=nd(G);G.bo=0;render()};
+
+/* Mỗi ngày: quan hệ trôi về 50, hiệu ứng ngầm, năng suất nhân sự, lương tháng */
+const _t=tick;tick=function(){_t();const g=G;if(!g||g.over)return;zi(g);const r=rev(g),nn=nd(g);
+g.rl=g.rl.map(v=>cl(v+(50-v)*.008,0,100));
+g.tr=cl(g.tr+(g.rl[0]-50)*.004,0,100);g.su=cl(g.su-(g.rl[1]-50)*.004,0,100);
+if(g.ls)g.p*=1+(g.rl[2]-50)*.00004;else g.cash+=r*(g.rl[2]-50)*.0004;
+g.hc.forEach((h,i)=>{const f=h/nn[i];g.cash+=r*CR[i]*Math.min(1.1,f)*(g.bo>0?1.1:1);if(i==3)g.su=Math.max(0,g.su-.06*Math.min(1,f));if(f<.5&&R()<.02){g.hc[i]=Math.max(1,Math.floor(h*.9));g.tr-=3;lg('😤 '+DP[i][0]+' quá tải, nhân viên nghỉ việc')}});
+if(g.bo>0)g.bo--;
+if(g.d%30==0){const p=pay(g);g.cash-=p;lg('💸 Trả lương tháng '+fm(p)+' cho '+g.hc.reduce((a,b)=>a+b,0)+' nhân sự')}
+if(!g.md)sv2();render()};
+
+/* Thành tích, sự kiện, quyết định liên quan tới quan hệ */
+AC.push(['Bộ ba quan hệ','🤝',g=>g.rl&&g.rl.every(v=>v>=70)],['Đội ngũ 100 người','👥',g=>g.hc&&g.hc.reduce((a,b)=>a+b,0)>=100]);
+EV.push(['📰 Tạp chí kinh tế bình chọn công ty tiêu biểu',g=>{rl(0,8);g.tr+=3}],['🕵️ Báo chí đào bới quá khứ công ty',g=>{rl(0,-10);g.tr-=3}],['🏦 Quỹ lớn công bố nâng tỷ trọng cổ phiếu của bạn',g=>{rl(2,8);if(g.ls)g.p*=1.03}],['🏛️ Cơ quan quản lý ra thông tư mới',g=>{rl(1,-6);g.cash-=prof(g)*5}]);
+DL.push(['📰 Phóng viên điều tra xin phỏng vấn','Hợp tác minh bạch: báo chí +10, rủi ro −5','Từ chối: báo chí −8',g=>{rl(0,10);g.su=Math.max(0,g.su-5)},g=>rl(0,-8)],
+['🏦 Quỹ lớn mời bạn dự roadshow','Tham dự: tốn 6 ngày doanh thu, quỹ lớn +12','Bỏ qua: quỹ lớn −3',g=>{g.cash-=rev(g)*6;rl(2,12)},g=>rl(2,-3)],
+['🏛️ Cơ quan quản lý đề nghị kiểm tra tự nguyện','Chấp nhận: tốn 5 ngày lợi nhuận, quản lý +12, rủi ro −6','Từ chối: quản lý −10',g=>{g.cash-=prof(g)*5;rl(1,12);g.su=Math.max(0,g.su-6)},g=>rl(1,-10)]);
+})();
+start();
+</script></body></html>
